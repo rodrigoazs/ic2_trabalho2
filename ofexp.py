@@ -5,6 +5,7 @@ Created on Mon Jul 10 14:31:01 2017
 @author: Rodrigo Azevedo
 """
 
+import numpy as np
 import matplotlib.pyplot as plt
 from numpy.polynomial.polynomial import Polynomial
 from numpy.polynomial import legendre as Legendre
@@ -80,7 +81,8 @@ class OverfittingExp:
         self.generate_g10()
         print('g2 eout:' + str(self.g2_eout))
         print('g10 eout:' + str(self.g10_eout))
-        
+        print(self.g2)
+        print(self.g10)
         #print(self.eout1())
         #print(self.eout2())
         
