@@ -31,7 +31,7 @@ def do_task(args):
     return calculate_noise(*args)
 
 def stochastic_noise(n_processes, N_bound, sigma2_bound, N_step, sigma2_step, rounds, Qf):
-    N_space = np.linspace(N_bound[0], N_bound[1], num=((N_bound[1] - N_bound[0]) / (N_step*1.0) + 1.0))
+    N_space = np.arange(N_bound[0], N_bound[1] + 1) #np.linspace(N_bound[0], N_bound[1], num=((N_bound[1] - N_bound[0]) / (N_step*1.0) + 1.0))
     sigma2_space = np.linspace(sigma2_bound[0], sigma2_bound[1], num=((sigma2_bound[1] - sigma2_bound[0]) / (sigma2_step*1.0) + 1.0))
     tasks = []
     
@@ -52,20 +52,20 @@ def stochastic_noise(n_processes, N_bound, sigma2_bound, N_step, sigma2_step, ro
             sys.stdout.write("\rCalculado ... %.2f%%" % ((100.0 * tasks_count / total_tasks)))
             sys.stdout.flush()
 
-stochastic_noise(4, [1,10], [0,10], 2, 2, 10, 10)
+stochastic_noise(8, [1,130], [0,2.5], 0, 51, 1000, 20)
 
 #a = calculate_noise(4, 1, 1,2)
 #
-n_processes= 1
-N_bound=[1,11]
-sigma2_bound=[0,10]
-N_step=2
-sigma2_step=2
-rounds=10
-Qf=10
-
-N_space = np.linspace(N_bound[0], N_bound[1], num=((N_bound[1] - N_bound[0]) / (N_step*1.0) + 1.0))
-sigma2_space = np.linspace(sigma2_bound[0], sigma2_bound[1], num=((sigma2_bound[1] - sigma2_bound[0]) / (sigma2_step*1.0) + 1.0))
+#n_processes= 1
+#N_bound=[1,11]
+#sigma2_bound=[0,10]
+#N_step=2
+#sigma2_step=2
+#rounds=10
+#Qf=10
+#
+#N_space = np.linspace(N_bound[0], N_bound[1], num=((N_bound[1] - N_bound[0]) / (N_step*1.0) + 1.0))
+#sigma2_space = np.linspace(sigma2_bound[0], sigma2_bound[1], num=((sigma2_bound[1] - sigma2_bound[0]) / (sigma2_step*1.0) + 1.0))
 #tasks = []
 #
 #for N in N_space:
