@@ -30,29 +30,29 @@ def calculate_noise(i, j, rounds, N, Qf, sigma2):
 def do_task(args):
     return calculate_noise(*args)
 
-def stochastic_noise(n_processes, N_bound, sigma2_bound, N_step, sigma2_step, rounds, Qf):
-    N_space = np.arange(N_bound[0], N_bound[1] + 1) #np.linspace(N_bound[0], N_bound[1], num=((N_bound[1] - N_bound[0]) / (N_step*1.0) + 1.0))
-    sigma2_space = np.linspace(sigma2_bound[0], sigma2_bound[1], num=((sigma2_bound[1] - sigma2_bound[0]) / (sigma2_step*1.0) + 1.0))
+def stochastic_noise(n_processes, N_bound, sigma2_bound, sigma2_samples, rounds, Qf):
+    N_space = np.arange(N_bound[0], N_bound[1] + 1)
+    sigma2_space = np.linspace(sigma2_bound[0], sigma2_bound[1], num=sigma2_samples)
     tasks = []
     
     for i in range(len(N_space)):
         for j in range(len(sigma2_space)):
             tasks.append((i, j, rounds, N_space[i], Qf, sigma2_space[j]))
             
-    total_tasks = len(tasks)
-    tasks_count = 0
-            
-    #pool = Pool(n_processes)
-    with open('stochastic_noise.txt', 'w') as file:
-        #for result in pool.imap_unordered(do_task, tasks):
-        for task in tasks:
-            result = do_task(task)
-            tasks_count += 1
-            file.write(str(result) + '\n')
-            sys.stdout.write("\rCalculado ... %.2f%%" % ((100.0 * tasks_count / total_tasks)))
-            sys.stdout.flush()
+#    total_tasks = len(tasks)
+#    tasks_count = 0
+#            
+#    #pool = Pool(n_processes)
+#    with open('stochastic_noise.txt', 'w') as file:
+#        #for result in pool.imap_unordered(do_task, tasks):
+#        for task in tasks:
+#            result = do_task(task)
+#            tasks_count += 1
+#            file.write(str(result) + '\n')
+#            sys.stdout.write("\rCalculado ... %.2f%%" % ((100.0 * tasks_count / total_tasks)))
+#            sys.stdout.flush()
 
-stochastic_noise(8, [1,130], [0,2.5], 0, 51, 1000, 20)
+stochastic_noise(8, [1,130], [0.0, 2.5], 51, 1000, 20)
 
 #a = calculate_noise(4, 1, 1,2)
 #
