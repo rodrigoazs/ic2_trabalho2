@@ -9,7 +9,27 @@ from multiprocessing import Pool
 import random
 import numpy as np
 import sys
+import time
 from ofexp import OverfittingExp
+
+def display_time(seconds, granularity=2):
+    result = []
+    intervals = (
+    ('semanas', 604800),  # 60 * 60 * 24 * 7
+    ('dias', 86400),    # 60 * 60 * 24
+    ('horas', 3600),    # 60 * 60
+    ('minutos', 60),
+    ('segundos', 1),
+    )
+
+    for name, count in intervals:
+        value = seconds // count
+        if value:
+            seconds -= value * count
+            if value == 1:
+                name = name.rstrip('s')
+            result.append("{} {}".format(value, name))
+    return ', '.join(result[:granularity])
 
 def calculate_noise(i, j, rounds, N, Qf, sigma2):
     sum_g2_eout = 0.0
@@ -39,18 +59,23 @@ def stochastic_noise(n_processes, N_bound, sigma2_bound, sigma2_samples, rounds,
         for j in range(len(sigma2_space)):
             tasks.append((i, j, rounds, N_space[i], Qf, sigma2_space[j]))
             
-#    total_tasks = len(tasks)
-#    tasks_count = 0
-#            
-#    #pool = Pool(n_processes)
-#    with open('stochastic_noise.txt', 'w') as file:
-#        #for result in pool.imap_unordered(do_task, tasks):
-#        for task in tasks:
-#            result = do_task(task)
-#            tasks_count += 1
-#            file.write(str(result) + '\n')
-#            sys.stdout.write("\rCalculado ... %.2f%%" % ((100.0 * tasks_count / total_tasks)))
-#            sys.stdout.flush()
+    total_tasks = len(tasks)
+    tasks_count = 0
+    last_time = 0
+    start_time = time.time()
+            
+    pool = Pool(n_processes)
+    with open('stochastic_noise.txt', 'w') as file:
+        for result in pool.imap_unordered(do_task, tasks):
+        #for task in tasks:
+            #result = do_task(task)
+            tasks_count += 1
+            last_time = time.time()
+            file.write(str(result) + '\n')
+            exec_time = last_time - start_time
+            remaining_time = (total_tasks - tasks_count) * (exec_time) / tasks_count
+            sys.stdout.write("\rCalculado ... %.2f%%. Tempo execução: %s. Tempo restante estimado: %s" % (((100.0 * tasks_count / total_tasks)), display_time(last_time - start_time), display_time(remaining_time)))
+            sys.stdout.flush()
 
 stochastic_noise(8, [1,130], [0.0, 2.5], 51, 1000, 20)
 
