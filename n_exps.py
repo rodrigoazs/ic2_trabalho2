@@ -66,6 +66,6 @@ for i in range(n_rounds):
     mean_sqr_g10.append((np.sqrt(a)).mean())
     
 print('std g2 ' +str(np.array(mean_g2).std()))
-print('std g10 ' +str(np.array(mean_g2).std()))
-print('std sqr g2 ' +str(np.array(mean_g2).std()))
-print('std sqr g10 ' +str(np.array(mean_g2).std()))
+print('std g10 ' +str(np.array(mean_g10).std()))
+print('std sqr g2 ' +str(np.array(mean_sqr_g2).std()))
+print('std sqr g10 ' +str(np.array(mean_sqr_g10).std()))
