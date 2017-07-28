@@ -9,6 +9,7 @@ import time
 import sys
 import numpy as np
 from ofexp import OverfittingExp
+from multiprocessing import Pool
 
 def display_time(seconds, granularity=2):
     result = []
@@ -29,7 +30,28 @@ def display_time(seconds, granularity=2):
             result.append("{} {}".format(value, name))
     return ', '.join(result[:granularity])
 
-n_exps = 10
+def calculate_noise(n_exps, N, Qf, sigma2):
+    g2_mse_eout = []
+    g10_mse_eout = []
+    g2_rmse_eout = []
+    g10_rmse_eout = []
+    for j in range(n_exps):
+        exp = OverfittingExp(Qf, N, sigma2)
+        exp.run()
+        g2_mse_eout.append(exp.g2_eout3)
+        g2_rmse_eout.append(exp.g2_eout2)
+        g10_mse_eout.append(exp.g10_eout3)
+        g10_rmse_eout.append(exp.g10_eout2)
+    g2_mse_eout = np.array(g2_mse_eout).mean()
+    g10_mse_eout = np.array(g10_mse_eout).mean()
+    g2_rmse_eout = np.array(g2_rmse_eout).mean()
+    g10_rmse_eout = np.array(g10_rmse_eout).mean()
+    return [g2_mse_eout, g10_mse_eout, g2_rmse_eout, g10_rmse_eout]
+
+def do_task(args):
+    return calculate_noise(*args)
+    
+n_exps = 1000
 n_rounds = 10
 
 g2_avg_mse_eout = []
@@ -43,31 +65,26 @@ last_time = 0
 start_time = time.time()
 
 Qf = 20
-N = 100
-sigma2 = 1
+N = 120
+sigma2 = 0.05
+n_processes = 4
 
+tasks = []
 for i in range(n_rounds):
-    g2_mse_eout = []
-    g10_mse_eout = []
-    g2_rmse_eout = []
-    g10_rmse_eout = []
-    for j in range(n_exps):
-        exp = OverfittingExp(Qf, N, sigma2)
-        exp.run()
-        g2_mse_eout.append(exp.g2_eout3)
-        g2_rmse_eout.append(exp.g2_eout2)
-        g10_mse_eout.append(exp.g10_eout3)
-        g10_rmse_eout.append(exp.g10_eout2)
-        tasks_count += 1
-        last_time = time.time()
-        exec_time = last_time - start_time
-        remaining_time = (total_tasks - tasks_count) * (exec_time) / tasks_count
-        sys.stdout.write("\rCalculado ... %.2f%%. Tempo execução: %s. Tempo restante estimado: %s" % (((100.0 * tasks_count / total_tasks)), display_time(last_time - start_time), display_time(remaining_time)))
-        sys.stdout.flush()
-    g2_avg_mse_eout.append((np.array(g2_mse_eout)).mean())
-    g2_avg_rmse_eout.append((np.array(g2_rmse_eout)).mean())
-    g10_avg_mse_eout.append((np.array(g10_mse_eout)).mean())
-    g10_avg_rmse_eout.append((np.array(g10_rmse_eout)).mean())
+    tasks.append((n_exps, N, Qf, sigma2))
+
+pool = Pool(n_processes)
+for result in pool.imap_unordered(do_task, tasks):
+    g2_avg_mse_eout.append(result[0])
+    g2_avg_rmse_eout.append(result[2])
+    g10_avg_mse_eout.append(result[1])
+    g10_avg_rmse_eout.append(result[3])
+    tasks_count += 1
+    last_time = time.time()
+    exec_time = last_time - start_time
+    remaining_time = (total_tasks - tasks_count) * (exec_time) / tasks_count
+    sys.stdout.write("\rCalculado ... %.2f%%. Tempo execução: %s. Tempo restante estimado: %s" % (((100.0 * tasks_count / total_tasks)), display_time(last_time - start_time), display_time(remaining_time)))
+    sys.stdout.flush()
 
 g2_avg_mse_eout = np.array(g2_avg_mse_eout)
 g10_avg_mse_eout = np.array(g10_avg_mse_eout)

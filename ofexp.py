@@ -18,11 +18,12 @@ class OverfittingExp:
         
     def generate_target(self):
         coefs = np.random.randn(self.Qf + 1)
-        s = 0.0
-        for coef in coefs:
-            s += coef**2
-        coefs = np.divide(coefs, np.sqrt(s))
-        self.target = Legendre.Legendre(coefs)
+        target = Legendre.Legendre(coefs)
+        integ = (target**2).integ()
+        exp = (integ(1.0)-integ(-1.0))/2
+        theta = 1/exp
+        target2 = np.sqrt(theta)*target
+        self.target = target2
         
     def generate_dataset(self):
         sigma = np.sqrt(self.sigma2)
@@ -152,3 +153,16 @@ class OverfittingExp:
 #overfit = g10_eout - g2_eout
 #print('\n')
 #print(overfit)
+#
+#Qf = 12
+#
+#coefs = np.random.randn(Qf + 1)
+#target = Legendre.Legendre(coefs)
+#integ = (target**2).integ()
+#exp = (integ(1.0)-integ(-1.0))/2
+#
+#theta = 1/exp
+#
+#target2 = np.sqrt(theta)*target
+#integ2 = (target2**2).integ()
+#exp2 = (integ2(1.0)-integ2(-1.0))/2
