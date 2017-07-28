@@ -29,7 +29,7 @@ def display_time(seconds, granularity=2):
             result.append("{} {}".format(value, name))
     return ', '.join(result[:granularity])
 
-n_exps = 10
+n_exps = 5000
 n_rounds = 10
 
 g2_avg_mse_eout = []
@@ -44,7 +44,7 @@ start_time = time.time()
 
 Qf = 20
 N = 100
-sigma2 = 1
+sigma2 = 0.05
 
 for i in range(n_rounds):
     g2_mse_eout = []
