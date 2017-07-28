@@ -20,8 +20,8 @@ class OverfittingExp:
         coefs = np.random.randn(self.Qf + 1)
         s = 0.0
         for coef in coefs:
-            s += coef
-        coefs = np.divide(coefs, s)
+            s += coef**2
+        coefs = np.divide(coefs, np.sqrt(s))
         self.target = Legendre.Legendre(coefs)
         
     def generate_dataset(self):
@@ -33,10 +33,14 @@ class OverfittingExp:
     def generate_g2(self):
         self.g2 = Polynomial.fit(self.dataset[0], self.dataset[1], 2, [-1.0, 1.0])
         self.g2_eout = self.eout(self.g2)
+        self.g2_eout2 = self.eout2(self.g2)
+        self.g2_eout3 = self.eout3(self.g2)
         
     def generate_g10(self):
         self.g10 = Polynomial.fit(self.dataset[0], self.dataset[1], 10, [-1.0, 1.0])
         self.g10_eout = self.eout(self.g10)
+        self.g10_eout2 = self.eout2(self.g10)
+        self.g10_eout3 = self.eout3(self.g10)
         
 #    def eout(self):
 #        dif =  Legendre.Legendre.cast(self.g2) - self.target
@@ -64,9 +68,25 @@ class OverfittingExp:
     def eout(self, g):
         # definite integral from -1 to 1
         target_poly = self.target.convert(kind=Polynomial)
-        comp = g - target_poly
+        comp = (g - target_poly)**2
         comp_integ = comp.integ()
-        return abs((-comp_integ(-1.0)) + (comp_integ(1.0)))
+        return np.sqrt(comp_integ(1.0) - comp_integ(-1.0))
+        
+    # sqrt(int((f(x)-g(x))^2)/int(1))
+    def eout2(self, g):
+        # definite integral from -1 to 1
+        target_poly = self.target.convert(kind=Polynomial)
+        comp = (g - target_poly)**2
+        comp_integ = comp.integ()
+        return np.sqrt((comp_integ(1.0) - comp_integ(-1.0))/2)
+    
+    # int((f(x)-g(x))^2)/int(1)
+    def eout3(self, g):
+        # definite integral from -1 to 1
+        target_poly = self.target.convert(kind=Polynomial)
+        comp = (g - target_poly)**2
+        comp_integ = comp.integ()
+        return (comp_integ(1.0) - comp_integ(-1.0))/2
 
     def plot(self):
         target_points = self.target.linspace(10000)

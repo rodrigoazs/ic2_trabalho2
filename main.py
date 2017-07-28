@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 """
 Created on Tue Jul 11 16:14:26 2017
-
 @author: Rodrigo Azevedo
 """
 
@@ -34,18 +33,22 @@ def display_time(seconds, granularity=2):
 def calculate_noise(i, j, n_exps, N, Qf, sigma2):
     sum_g2_eout = 0.0
     sum_g10_eout = 0.0
-    sum_sqrt_g2_eout = 0.0
-    sum_sqrt_g10_eout = 0.0 
+    sum_g2_eout2 = 0.0
+    sum_g10_eout2 = 0.0 
+    sum_g2_eout3 = 0.0
+    sum_g10_eout3 = 0.0 
     
     for r in range(n_exps):
         exp = OverfittingExp(Qf, N, sigma2)
         exp.run()
         sum_g2_eout += exp.g2_eout
         sum_g10_eout += exp.g10_eout
-        sum_sqrt_g2_eout += np.sqrt(exp.g2_eout)
-        sum_sqrt_g10_eout += np.sqrt(exp.g10_eout)
+        sum_g2_eout2 += exp.g2_eout2
+        sum_g10_eout2 += exp.g10_eout2
+        sum_g2_eout3 += exp.g2_eout3
+        sum_g10_eout3 += exp.g10_eout3
         
-    return [i, j, sum_g2_eout/n_exps, sum_g10_eout/n_exps, sum_sqrt_g2_eout/n_exps, sum_sqrt_g10_eout/n_exps]
+    return [i, j, sum_g10_eout/n_exps, sum_g2_eout/n_exps, sum_g10_eout2/n_exps, sum_g2_eout2/n_exps, sum_g10_eout3/n_exps, sum_g2_eout3/n_exps]
 
 def do_task(args):
     return calculate_noise(*args)
@@ -77,7 +80,7 @@ def stochastic_noise(n_processes, N_bound, sigma2_bound, sigma2_samples, n_exps,
             sys.stdout.write("\rCalculado ... %.2f%%. Tempo execução: %s. Tempo restante estimado: %s" % (((100.0 * tasks_count / total_tasks)), display_time(last_time - start_time), display_time(remaining_time)))
             sys.stdout.flush()
 
-stochastic_noise(8, [1,130], [0.0, 2.5], 51, 1000, 20)
+stochastic_noise(4, [80,130], [0.0, 2.5], 51, 1000, 20)
 
 #a = calculate_noise(4, 1, 1,2)
 #
