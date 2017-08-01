@@ -33,14 +33,14 @@ class OverfittingExp:
         
     def generate_g2(self):
         self.g2 = Polynomial.fit(self.dataset[0], self.dataset[1], 2, [-1.0, 1.0])
-        self.g2_eout = self.eout(self.g2)
-        self.g2_eout2 = self.eout2(self.g2)
+        #self.g2_eout = self.eout(self.g2)
+        #self.g2_eout2 = self.eout2(self.g2)
         self.g2_eout3 = self.eout3(self.g2)
         
     def generate_g10(self):
         self.g10 = Polynomial.fit(self.dataset[0], self.dataset[1], 10, [-1.0, 1.0])
-        self.g10_eout = self.eout(self.g10)
-        self.g10_eout2 = self.eout2(self.g10)
+        #self.g10_eout = self.eout(self.g10)
+        #self.g10_eout2 = self.eout2(self.g10)
         self.g10_eout3 = self.eout3(self.g10)
         
 #    def eout(self):
