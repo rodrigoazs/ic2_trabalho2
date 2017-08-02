@@ -26,8 +26,9 @@ with open("stochastic_noise.txt", "r") as file:
         data = ast.literal_eval(line)
         try:
             w = p[data[0]][data[1]]
-            measure = data[4] - data[5]
-            M[data[0]][data[1]] = (w * n_exps * M[data[0]][data[1]] + measure) / ((w+1) * n_exps)
+            measure = data[2] - data[3]
+            M[data[0]][data[1]] = (w * n_exps * M[data[0]][data[1]] + n_exps * measure) / ((w + 1) * n_exps)
+            #M[data[0]][data[1]] = data[2] - data[3]
             p[data[0]][data[1]] += 1
         except:
             print(str(data[0]) + ' ' + str(data[1]))
