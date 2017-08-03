@@ -7,8 +7,6 @@ Created on Tue Jul 11 17:18:33 2017
 
 import matplotlib.pyplot as plt
 import numpy as np
-import sys
-import time
 import ast
 
 n_exps = 1000
@@ -20,7 +18,6 @@ X, Y = np.meshgrid(x, y)
 p = [[0 for i in range(X.shape[0])] for j in range(X.shape[1])]
 M = [[0 for i in range(X.shape[0])] for j in range(X.shape[1])]
 
-#M[10][20] = -2
 folder = 'plot'
 plot_last = 5
 
@@ -32,7 +29,6 @@ for file_i in range(plot_last):
                 w = p[data[0]][data[1]]
                 measure = data[2] - data[3]
                 M[data[0]][data[1]] = (w * n_exps * M[data[0]][data[1]] + n_exps * measure) / ((w + 1) * n_exps)
-                #M[data[0]][data[1]] = data[2] - data[3]
                 p[data[0]][data[1]] += 1
             except:
                 print(str(data[0]) + ' ' + str(data[1]))
