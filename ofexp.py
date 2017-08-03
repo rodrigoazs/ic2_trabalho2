@@ -1,14 +1,8 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Mon Jul 10 14:31:01 2017
-
-@author: Rodrigo Azevedo
-"""
-
 import numpy as np
 import matplotlib.pyplot as plt
 from numpy.polynomial.polynomial import Polynomial
 from numpy.polynomial import legendre as Legendre
+from numpy import polynomial as P
 
 class OverfittingExp:
     def __init__(self, Qf, N, sigma2):
@@ -18,12 +12,15 @@ class OverfittingExp:
         
     def generate_target(self):
         coefs = np.random.randn(self.Qf + 1)
-        target = Legendre.Legendre(coefs)
-        integ = (target**2).integ()
-        exp = (integ(1.0)-integ(-1.0))/2
-        theta = 1/exp
-        target2 = np.sqrt(theta)*target
-        self.target = target2
+        #target = Legendre.Legendre(coefs)
+        #integ = (target**2).integ()
+        #exp = (integ(1.0)-integ(-1.0))/2
+        #theta = 1/exp
+        #target2 = np.sqrt(theta)*target
+        s = 0.0
+        for n in range(len(coefs)):
+            s += (coefs[n]**2) / (2*n + 1)
+        self.target = Legendre.Legendre(np.divide(coefs, np.sqrt(s)))
         
     def generate_dataset(self):
         sigma = np.sqrt(self.sigma2)
@@ -33,15 +30,15 @@ class OverfittingExp:
         
     def generate_g2(self):
         self.g2 = Polynomial.fit(self.dataset[0], self.dataset[1], 2, [-1.0, 1.0])
-        #self.g2_eout = self.eout(self.g2)
+        self.g2_eout = self.eout(self.g2)
         #self.g2_eout2 = self.eout2(self.g2)
-        self.g2_eout3 = self.eout3(self.g2)
+        #self.g2_eout3 = self.eout3(self.g2)
         
     def generate_g10(self):
         self.g10 = Polynomial.fit(self.dataset[0], self.dataset[1], 10, [-1.0, 1.0])
-        #self.g10_eout = self.eout(self.g10)
+        self.g10_eout = self.eout(self.g10)
         #self.g10_eout2 = self.eout2(self.g10)
-        self.g10_eout3 = self.eout3(self.g10)
+        #self.g10_eout3 = self.eout3(self.g10)
         
 #    def eout(self):
 #        dif =  Legendre.Legendre.cast(self.g2) - self.target
@@ -67,11 +64,12 @@ class OverfittingExp:
 #        return e / len(x_space)   
     
     def eout(self, g):
-        # definite integral from -1 to 1
-        target_poly = self.target.convert(kind=Polynomial)
-        comp = (g - target_poly)**2
-        comp_integ = comp.integ()
-        return np.sqrt(comp_integ(1.0) - comp_integ(-1.0))
+        dif =  Legendre.Legendre.cast(g) - self.target
+        coefs = dif.coef
+        s = 0.0
+        for n in range(len(coefs)):
+            s += (coefs[n]**2) / (2*n + 1)
+        return s
         
     # sqrt(int((f(x)-g(x))^2)/int(1))
     def eout2(self, g):
@@ -110,59 +108,3 @@ class OverfittingExp:
         self.generate_g10()
         #print('g2 eout:' + str(self.g2_eout))
         #print('g10 eout:' + str(self.g10_eout))
-        
-#a = OverfittingExp(5, 10, 0.1)
-#a.run()
-#a.plot()
-
-#x = np.arange(130 + 1)
-#y = np.linspace(0, 2.5, num=51) #np.arange(-2,2)
-#X, Y = np.meshgrid(x, y)
-#
-#M = [[0 for i in range(X.shape[0])] for j in range(X.shape[1])]
-#
-#for i in range(1, len(x)):
-#    for j in range(len(y)):
-#        print(str(i) + '-' + str(j))
-#        a = OverfittingExp(20, x[i], y[j])
-#        r = 0.0
-#        for t in range(5):
-#            r += a.run()
-#        r = r/5
-#        M[i][j] = r
-# 
-#LML = np.array(M).T
-#
-#plt.pcolor(X, Y, LML, vmin=-0.2, vmax=0.2, cmap='jet')
-#plt.colorbar()
-#plt.show()
-
-#g2_eout = 0.0
-#g10_eout = 0.0
-#siz = 1000
-#for i in range(siz):
-#    a = OverfittingExp(20, 130, 1)
-#    a.run()
-#    g2_eout += a.g2_eout
-#    g10_eout += a.g10_eout
-#    sys.stdout.write("\rCalculado ... %s%%" % ((100.0 * i / siz)))
-#    sys.stdout.flush()
-#    
-#g2_eout = g2_eout / siz
-#g10_eout = g10_eout / siz
-#overfit = g10_eout - g2_eout
-#print('\n')
-#print(overfit)
-#
-#Qf = 12
-#
-#coefs = np.random.randn(Qf + 1)
-#target = Legendre.Legendre(coefs)
-#integ = (target**2).integ()
-#exp = (integ(1.0)-integ(-1.0))/2
-#
-#theta = 1/exp
-#
-#target2 = np.sqrt(theta)*target
-#integ2 = (target2**2).integ()
-#exp2 = (integ2(1.0)-integ2(-1.0))/2
