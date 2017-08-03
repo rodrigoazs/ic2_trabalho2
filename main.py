@@ -54,14 +54,30 @@ def stochastic_noise(n_processes, N_bound, sigma2_bound, sigma2_samples, Qf, n_e
         for i in range(len(N_space)):
             for j in range(len(sigma2_space)):
                 tasks.append((i, j, n_exps, N_space[i], Qf, sigma2_space[j]))
+                
+    return tasks
+
+def deterministic_noise(n_processes, N_bound, Qf_bound, sigma2, n_exps, n_rounds):
+    N_space = np.arange(N_bound[0], N_bound[1] + 1)
+    Qf_space = np.arange(Qf_bound[0], Qf_bound[1] + 1)
+    tasks = []
+    
+    for rnd in range(n_rounds):
+        for i in range(len(N_space)):
+            for j in range(len(Qf_space)):
+                #if (N_space[i] < 10 and Qf_space[j] < 10) or (N_space[i] > 80 and N_space[i] < 90 and Qf_space[j] > 10 and Qf_space[j] < 20):
+                tasks.append((i, j, n_exps, N_space[i], Qf_space[j], sigma2))
+                
+    return tasks
             
+def run_tasks(tasks, file):
     total_tasks = len(tasks)
     tasks_count = 0
     last_time = 0
     start_time = time.time()
             
     #pool = Pool(n_processes)
-    with open('stochastic_noise.txt', 'w') as file:
+    with open(file, 'w') as file:
         #for result in pool.imap_unordered(do_task, tasks):
         for task in tasks:
             result = do_task(task)
@@ -73,4 +89,5 @@ def stochastic_noise(n_processes, N_bound, sigma2_bound, sigma2_samples, Qf, n_e
             sys.stdout.write("\rCalculado ... %.2f%%. Tempo execução: %s. Tempo restante estimado: %s" % (((100.0 * tasks_count / total_tasks)), display_time(last_time - start_time), display_time(remaining_time)))
             sys.stdout.flush()
 
-stochastic_noise(4, [80,130], [0.0, 2.5], 51, 20, 5000, 1)
+#run_tasks(stochastic_noise(4, [80,130], [0.0, 2.5], 51, 20, 1000, 1), 'stochastic_noise.txt')
+run_tasks(deterministic_noise(4, [1,130], [0, 100], 0.1, 10, 1), 'deterministic_noise.txt')
