@@ -45,7 +45,7 @@ def calculate_noise(i, j, n_exps, N, Qf, sigma2):
 def do_task(args):
     return calculate_noise(*args)
 
-def stochastic_noise(n_processes, N_bound, sigma2_bound, sigma2_samples, Qf, n_exps, n_rounds):
+def stochastic_noise(N_bound, sigma2_bound, sigma2_samples, Qf, n_exps, n_rounds):
     N_space = np.arange(N_bound[0], N_bound[1] + 1)
     sigma2_space = np.linspace(sigma2_bound[0], sigma2_bound[1], num=sigma2_samples)
     tasks = []
@@ -57,7 +57,7 @@ def stochastic_noise(n_processes, N_bound, sigma2_bound, sigma2_samples, Qf, n_e
                 
     return tasks
 
-def deterministic_noise(n_processes, N_bound, Qf_bound, sigma2, n_exps, n_rounds):
+def deterministic_noise(N_bound, Qf_bound, sigma2, n_exps, n_rounds):
     N_space = np.arange(N_bound[0], N_bound[1] + 1)
     Qf_space = np.arange(Qf_bound[0], Qf_bound[1] + 1)
     tasks = []
@@ -70,17 +70,18 @@ def deterministic_noise(n_processes, N_bound, Qf_bound, sigma2, n_exps, n_rounds
                 
     return tasks
             
-def run_tasks(tasks, file):
+def run_tasks(tasks, n_processes, file):
+    #tasks = ret[0]
     total_tasks = len(tasks)
     tasks_count = 0
     last_time = 0
     start_time = time.time()
             
-    #pool = Pool(n_processes)
+    pool = Pool(n_processes)
     with open(file, 'w') as file:
-        #for result in pool.imap_unordered(do_task, tasks):
-        for task in tasks:
-            result = do_task(task)
+        for result in pool.imap_unordered(do_task, tasks):
+        #for task in tasks:
+            #result = do_task(task)
             tasks_count += 1
             last_time = time.time()
             file.write(str(result) + '\n')
@@ -89,5 +90,5 @@ def run_tasks(tasks, file):
             sys.stdout.write("\rCalculado ... %.2f%%. Tempo execução: %s. Tempo restante estimado: %s" % (((100.0 * tasks_count / total_tasks)), display_time(last_time - start_time), display_time(remaining_time)))
             sys.stdout.flush()
 
-#run_tasks(stochastic_noise(4, [80,130], [0.0, 2.5], 51, 20, 1000, 1), 'stochastic_noise.txt')
-run_tasks(deterministic_noise(4, [1,130], [0, 100], 0.1, 10, 1), 'deterministic_noise.txt')
+#run_tasks(stochastic_noise([80,130], [0.0, 2.5], 51, 20, 1000, 1), 4, 'stochastic_noise.txt')
+run_tasks(deterministic_noise([60,130], [0, 100], 0.1, 1000, 1), 4, 'deterministic_noise.txt')

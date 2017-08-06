@@ -23,15 +23,15 @@ class OverfittingExp:
         self.dataset = [X, y]
         
     def generate_g2(self):
-        self.g2 = Polynomial.fit(self.dataset[0], self.dataset[1], 2, [-1.0, 1.0])
+        self.g2 = Legendre.Legendre.fit(self.dataset[0], self.dataset[1], 2, [-1.0, 1.0])
         self.g2_eout = self.eout(self.g2)
         
     def generate_g10(self):
-        self.g10 = Polynomial.fit(self.dataset[0], self.dataset[1], 10, [-1.0, 1.0])
+        self.g10 = Legendre.Legendre.fit(self.dataset[0], self.dataset[1], 10, [-1.0, 1.0])
         self.g10_eout = self.eout(self.g10)
   
     def eout(self, g):
-        dif =  Legendre.Legendre.cast(g) - self.target
+        dif = g - self.target
         coefs = dif.coef
         s = 0.0
         for n in range(len(coefs)):
