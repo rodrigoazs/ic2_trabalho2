@@ -71,7 +71,6 @@ def deterministic_noise(N_bound, Qf_bound, sigma2, n_exps, n_rounds):
     return tasks
             
 def run_tasks(tasks, n_processes, file):
-    #tasks = ret[0]
     total_tasks = len(tasks)
     tasks_count = 0
     last_time = 0
@@ -91,4 +90,4 @@ def run_tasks(tasks, n_processes, file):
             sys.stdout.flush()
 
 #run_tasks(stochastic_noise([80,130], [0.0, 2.5], 51, 20, 1000, 1), 4, 'stochastic_noise.txt')
-run_tasks(deterministic_noise([60,130], [0, 100], 0.1, 1000, 1), 4, 'deterministic_noise.txt')
+run_tasks(deterministic_noise([60,130], [0, 100], 0.1, 1000, 5), 4, 'deterministic_noise.txt')
