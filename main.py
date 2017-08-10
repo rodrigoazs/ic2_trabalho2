@@ -77,7 +77,7 @@ def run_tasks(tasks, n_processes, file):
     start_time = time.time()
             
     pool = Pool(n_processes)
-    with open(file, 'w') as file:
+    with open(file, 'a') as file:
         for result in pool.imap_unordered(do_task, tasks):
         #for task in tasks:
             #result = do_task(task)
@@ -89,5 +89,5 @@ def run_tasks(tasks, n_processes, file):
             sys.stdout.write("\rCalculado ... %.2f%%. Tempo execução: %s. Tempo restante estimado: %s" % (((100.0 * tasks_count / total_tasks)), display_time(last_time - start_time), display_time(remaining_time)))
             sys.stdout.flush()
 
-#run_tasks(stochastic_noise([80,130], [0.0, 2.5], 51, 20, 1000, 1), 4, 'stochastic_noise.txt')
-run_tasks(deterministic_noise([60,130], [0, 100], 0.1, 1000, 5), 4, 'deterministic_noise.txt')
+#run_tasks(stochastic_noise([80,130], [0.0, 2.5], 51, 20, 1000, 20), 4, 'stochastic_noise.txt')
+run_tasks(deterministic_noise([60,130], [0, 100], 0.1, 1000, 20), 4, 'deterministic_noise.txt')
