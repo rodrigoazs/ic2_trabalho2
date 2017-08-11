@@ -43,6 +43,13 @@ def plot(values, total_plots, filename):
     plt.pcolor(X, Y, LML, vmin=-0.2, vmax=0.2, cmap='jet')
     plt.colorbar()
     plt.show()
+    
+    sets = [set(i) for i in p]
+    groups = set()
+    for i in sets:
+        groups = groups.union(i)
+        
+    print('Grupos de iterações: '+ str(sorted(list(groups))))
 
 #plot(stochastic_noise([80,130], [0.0, 2.5], 51), 5, 'stochastic_noise')
 plot(deterministic_noise([1,130], [0, 100]), 1, 'deterministic_noise')
